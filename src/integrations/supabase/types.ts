@@ -14,16 +14,270 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      audit_log: {
+        Row: {
+          action: string
+          actor_id: string | null
+          created_at: string
+          id: string
+          meta: Json | null
+          target_id: string | null
+          target_type: string
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          created_at?: string
+          id?: string
+          meta?: Json | null
+          target_id?: string | null
+          target_type: string
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          created_at?: string
+          id?: string
+          meta?: Json | null
+          target_id?: string | null
+          target_type?: string
+        }
+        Relationships: []
+      }
+      blogs: {
+        Row: {
+          approved_by: string | null
+          author_id: string
+          comments_count: number | null
+          content: string
+          cover_image_url: string | null
+          created_at: string
+          id: string
+          likes_count: number | null
+          published_at: string | null
+          rejection_reason: string | null
+          slug: string
+          status: Database["public"]["Enums"]["blog_status"]
+          tags: string[] | null
+          title: string
+          updated_at: string
+          views_count: number | null
+          visibility: Database["public"]["Enums"]["visibility"]
+        }
+        Insert: {
+          approved_by?: string | null
+          author_id: string
+          comments_count?: number | null
+          content: string
+          cover_image_url?: string | null
+          created_at?: string
+          id?: string
+          likes_count?: number | null
+          published_at?: string | null
+          rejection_reason?: string | null
+          slug: string
+          status?: Database["public"]["Enums"]["blog_status"]
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+          views_count?: number | null
+          visibility?: Database["public"]["Enums"]["visibility"]
+        }
+        Update: {
+          approved_by?: string | null
+          author_id?: string
+          comments_count?: number | null
+          content?: string
+          cover_image_url?: string | null
+          created_at?: string
+          id?: string
+          likes_count?: number | null
+          published_at?: string | null
+          rejection_reason?: string | null
+          slug?: string
+          status?: Database["public"]["Enums"]["blog_status"]
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+          views_count?: number | null
+          visibility?: Database["public"]["Enums"]["visibility"]
+        }
+        Relationships: []
+      }
+      comments: {
+        Row: {
+          author_id: string
+          blog_id: string
+          content: string
+          created_at: string
+          id: string
+          status: Database["public"]["Enums"]["comment_status"]
+          updated_at: string
+        }
+        Insert: {
+          author_id: string
+          blog_id: string
+          content: string
+          created_at?: string
+          id?: string
+          status?: Database["public"]["Enums"]["comment_status"]
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string
+          blog_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          status?: Database["public"]["Enums"]["comment_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comments_blog_id_fkey"
+            columns: ["blog_id"]
+            isOneToOne: false
+            referencedRelation: "blogs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      likes: {
+        Row: {
+          blog_id: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          blog_id: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          blog_id?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "likes_blog_id_fkey"
+            columns: ["blog_id"]
+            isOneToOne: false
+            referencedRelation: "blogs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          created_at: string
+          data: Json | null
+          id: string
+          read: boolean | null
+          type: Database["public"]["Enums"]["notification_type"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          data?: Json | null
+          id?: string
+          read?: boolean | null
+          type: Database["public"]["Enums"]["notification_type"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json | null
+          id?: string
+          read?: boolean | null
+          type?: Database["public"]["Enums"]["notification_type"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string
+          id: string
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          id?: string
+          name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_user_role: {
+        Args: { user_uuid: string }
+        Returns: Database["public"]["Enums"]["app_role"]
+      }
+      has_role: {
+        Args: {
+          check_role: Database["public"]["Enums"]["app_role"]
+          user_uuid: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "USER" | "ADMIN"
+      blog_status:
+        | "DRAFT"
+        | "PENDING_REVIEW"
+        | "PUBLISHED"
+        | "REJECTED"
+        | "HIDDEN"
+        | "DELETED"
+      comment_status: "VISIBLE" | "HIDDEN" | "DELETED"
+      notification_type: "SUBMISSION_STATUS" | "NEW_COMMENT" | "BLOG_PUBLISHED"
+      visibility: "PUBLIC" | "HIDDEN"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +404,19 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["USER", "ADMIN"],
+      blog_status: [
+        "DRAFT",
+        "PENDING_REVIEW",
+        "PUBLISHED",
+        "REJECTED",
+        "HIDDEN",
+        "DELETED",
+      ],
+      comment_status: ["VISIBLE", "HIDDEN", "DELETED"],
+      notification_type: ["SUBMISSION_STATUS", "NEW_COMMENT", "BLOG_PUBLISHED"],
+      visibility: ["PUBLIC", "HIDDEN"],
+    },
   },
 } as const
