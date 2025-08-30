@@ -21,7 +21,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { mockUser, mockBlogs, mockTags, mockAuthors } from "@/data/mockData";
+import { mockBlogs, mockTags, mockAuthors } from "@/data/mockData";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function BlogList() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -33,7 +34,7 @@ export default function BlogList() {
   const [sortBy, setSortBy] = useState(searchParams.get("sort") || "latest");
   const [showFilters, setShowFilters] = useState(false);
   
-  const user = mockUser;
+  const { isAuthenticated } = useAuth();
 
   // Filter and sort blogs based on current filters
   const filteredBlogs = mockBlogs
@@ -103,7 +104,7 @@ export default function BlogList() {
 
   return (
     <div className="min-h-screen bg-gradient-subtle">
-      <Header user={user} />
+      <Header />
       
       <div className="container mx-auto px-4 py-8">
         {/* Header Section */}
@@ -263,7 +264,7 @@ export default function BlogList() {
             {filteredBlogs.length} article{filteredBlogs.length !== 1 ? "s" : ""} found
           </p>
           
-          {user && (
+          {isAuthenticated && (
             <Button asChild variant="brand">
               <Link to="/create">
                 Write Article

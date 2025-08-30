@@ -15,11 +15,12 @@ import {
   BookOpen,
   Sparkles 
 } from "lucide-react";
-import { mockUser, mockBlogs, mockTrendingBlogs, mockTags } from "@/data/mockData";
+import { mockBlogs, mockTrendingBlogs, mockTags } from "@/data/mockData";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
-  const user = mockUser; // In real app, this would come from auth context
+  const { isAuthenticated } = useAuth();
   
   const latestBlogs = mockBlogs.slice(0, 6);
   const trendingBlogs = mockTrendingBlogs;
@@ -35,7 +36,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-subtle">
-      <Header user={user} />
+      <Header />
       
       {/* Hero Section */}
       <section className="relative py-20 lg:py-32 overflow-hidden">
@@ -86,7 +87,7 @@ export default function Home() {
                 </Link>
               </Button>
               <Button asChild variant="outline" size="lg" className="text-lg px-8">
-                <Link to={user ? "/create" : "/signup"}>
+                <Link to={isAuthenticated ? "/create" : "/auth"}>
                   <PenTool className="w-5 h-5 mr-2" />
                   Start Writing
                 </Link>
@@ -204,7 +205,7 @@ export default function Home() {
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button asChild size="lg" variant="secondary" className="text-lg px-8">
-              <Link to={user ? "/create" : "/signup"}>
+              <Link to={isAuthenticated ? "/create" : "/auth"}>
                 <PenTool className="w-5 h-5 mr-2" />
                 Start Writing Today
               </Link>

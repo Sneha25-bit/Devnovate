@@ -18,20 +18,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useAuth } from "@/hooks/useAuth";
 
-interface HeaderProps {
-  user?: {
-    name: string;
-    email: string;
-    role: "USER" | "ADMIN";
-    avatarUrl?: string;
-  } | null;
-}
-
-export function Header({ user }: HeaderProps) {
+export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
+  const { isAuthenticated, profile, userRole, signOut } = useAuth();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,9 +35,9 @@ export function Header({ user }: HeaderProps) {
     }
   };
 
-  const handleLogout = () => {
-    // TODO: Implement logout logic
-    console.log("Logout clicked");
+  const handleLogout = async () => {
+    await signOut();
+    setIsMobileMenuOpen(false);
   };
 
   return (
@@ -75,7 +69,7 @@ export function Header({ user }: HeaderProps) {
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-4">
-          {user ? (
+          {isAuthenticated ? (
             <>
               <Button asChild variant="ghost" size="sm">
                 <Link to="/blogs">Browse</Link>
@@ -90,21 +84,17 @@ export function Header({ user }: HeaderProps) {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="sm" className="relative h-8 w-8 rounded-full">
-                    {user.avatarUrl ? (
-                      <img 
-                        src={user.avatarUrl} 
-                        alt={user.name}
-                        className="h-8 w-8 rounded-full object-cover"
-                      />
-                    ) : (
-                      <User className="h-4 w-4" />
-                    )}
+                    <Avatar className="h-8 w-8">
+                      <AvatarFallback className="bg-primary/10">
+                        {profile?.name?.[0] || 'U'}
+                      </AvatarFallback>
+                    </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
                   <div className="px-2 py-1.5 text-sm">
-                    <div className="font-medium">{user.name}</div>
-                    <div className="text-muted-foreground text-xs">{user.email}</div>
+                    <div className="font-medium">{profile?.name}</div>
+                    <div className="text-muted-foreground text-xs">{userRole?.toLowerCase()}</div>
                   </div>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
@@ -113,7 +103,7 @@ export function Header({ user }: HeaderProps) {
                   <DropdownMenuItem asChild>
                     <Link to="/my-blogs">My Blogs</Link>
                   </DropdownMenuItem>
-                  {user.role === "ADMIN" && (
+                  {userRole === "ADMIN" && (
                     <>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem asChild>
@@ -138,10 +128,10 @@ export function Header({ user }: HeaderProps) {
                 <Link to="/blogs">Browse</Link>
               </Button>
               <Button asChild variant="ghost" size="sm">
-                <Link to="/login">Sign In</Link>
+                <Link to="/auth">Sign In</Link>
               </Button>
               <Button asChild variant="brand" size="sm" className="bg-gradient-brand hover:opacity-90">
-                <Link to="/signup">Get Started</Link>
+                <Link to="/auth">Get Started</Link>
               </Button>
             </>
           )}
@@ -182,7 +172,7 @@ export function Header({ user }: HeaderProps) {
                 </Link>
               </Button>
               
-              {user ? (
+              {isAuthenticated ? (
                 <>
                   <Button asChild variant="ghost" className="justify-start">
                     <Link to="/create" onClick={() => setIsMobileMenuOpen(false)}>
@@ -200,7 +190,7 @@ export function Header({ user }: HeaderProps) {
                       My Blogs
                     </Link>
                   </Button>
-                  {user.role === "ADMIN" && (
+                  {userRole === "ADMIN" && (
                     <Button asChild variant="ghost" className="justify-start">
                       <Link to="/admin" onClick={() => setIsMobileMenuOpen(false)}>
                         <Settings className="mr-2 h-4 w-4" />
@@ -211,10 +201,7 @@ export function Header({ user }: HeaderProps) {
                   <Button
                     variant="ghost"
                     className="justify-start text-destructive"
-                    onClick={() => {
-                      handleLogout();
-                      setIsMobileMenuOpen(false);
-                    }}
+                    onClick={handleLogout}
                   >
                     <LogOut className="mr-2 h-4 w-4" />
                     Log out
@@ -223,12 +210,12 @@ export function Header({ user }: HeaderProps) {
               ) : (
                 <>
                   <Button asChild variant="ghost" className="justify-start">
-                    <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>
+                    <Link to="/auth" onClick={() => setIsMobileMenuOpen(false)}>
                       Sign In
                     </Link>
                   </Button>
                   <Button asChild variant="brand" className="justify-start bg-gradient-brand">
-                    <Link to="/signup" onClick={() => setIsMobileMenuOpen(false)}>
+                    <Link to="/auth" onClick={() => setIsMobileMenuOpen(false)}>
                       Get Started
                     </Link>
                   </Button>
